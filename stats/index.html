@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f4f5f7">
+  <title>站点状态 · Krisnile</title>
+  <meta name="description" content="Krisnile 博客站点状态与访问数据面板">
+  <link rel="icon" href="/favicon-kisie.ico">
+  <style>
+    :root {
+      --bg: #f1f3f6;
+      --paper: #fbfcfe;
+      --panel: #ffffff;
+      --text: #20242c;
+      --muted: #697181;
+      --faint: #9ba2af;
+      --line: #dce1e9;
+      --accent: #3157d5;
+      --accent-soft: rgba(49, 87, 213, .11);
+      --signal: #1caf73;
+      --shadow: 0 22px 70px rgba(44, 53, 72, .11);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #171a20;
+        --paper: #20242c;
+        --panel: #252a33;
+        --text: #eef1f6;
+        --muted: #a5adbb;
+        --faint: #737c8b;
+        --line: #353c48;
+        --accent: #8ca4ff;
+        --accent-soft: rgba(140, 164, 255, .13);
+        --signal: #46d394;
+        --shadow: 0 18px 55px rgba(0, 0, 0, .28);
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { min-height: 100%; }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px),
+        var(--bg);
+      background-size: 72px 72px;
+      font-family: "Avenir Next", Avenir, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; }
+
+    .page {
+      width: min(1500px, 100%);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: clamp(18px, 3vw, 42px);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: white;
+      background: var(--accent);
+      box-shadow: 6px 6px 0 var(--accent-soft);
+    }
+
+    .back {
+      padding: 9px 13px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--muted);
+      background: var(--paper);
+      font-size: 13px;
+      text-decoration: none;
+      backdrop-filter: blur(16px);
+      transition: transform .2s ease, color .2s ease, border-color .2s ease;
+    }
+
+    .back:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .intro {
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 18px;
+      padding: clamp(24px, 4vw, 46px) clamp(22px, 4vw, 48px) clamp(24px, 4vw, 46px) clamp(82px, 8vw, 124px);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .telemetry {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: clamp(58px, 7vw, 92px);
+      border-right: 1px solid var(--line);
+      background:
+        repeating-linear-gradient(to bottom, transparent 0 11px, var(--line) 11px 12px),
+        var(--accent-soft);
+    }
+
+    .telemetry::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 18%;
+      width: 64%;
+      height: 2px;
+      background: var(--accent);
+      box-shadow: 0 0 18px var(--accent);
+      animation: scan 4.8s cubic-bezier(.45, 0, .55, 1) infinite;
+    }
+
+    .telemetry::after {
+      content: "LIVE\A SIGNAL";
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      color: var(--accent);
+      font: 700 9px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: .12em;
+      text-align: center;
+      white-space: pre;
+      transform: translateX(-50%);
+    }
+
+    @keyframes scan {
+      0%, 100% { top: 18%; opacity: .38; }
+      50% { top: 72%; opacity: 1; }
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .18em;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-family: "Iowan Old Style", "Songti SC", "STSong", serif;
+      font-size: clamp(30px, 4.5vw, 52px);
+      font-weight: 700;
+      line-height: 1.12;
+      letter-spacing: -.045em;
+    }
+
+    .intro-copy {
+      max-width: 660px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .status {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      color: var(--muted);
+      background: var(--panel);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+      letter-spacing: .04em;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--signal);
+      box-shadow: 0 0 0 5px rgba(28, 175, 115, .13);
+    }
+
+    .panel {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .panel-bar {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      min-height: 52px;
+      padding: 0 17px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      background: var(--paper);
+      font: 11px ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: .03em;
+    }
+
+    .dots { display: flex; gap: 7px; }
+    .dots i { width: 10px; height: 10px; border-radius: 50%; }
+    .dots i:nth-child(1) { background: #ff6b66; }
+    .dots i:nth-child(2) { background: #ffc857; }
+    .dots i:nth-child(3) { background: #2fc77a; }
+
+    .panel-link {
+      justify-self: end;
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .panel-link:hover { opacity: .72; }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: max(620px, calc(100vh - 270px));
+      border: 0;
+      background: white;
+    }
+
+    .fallback {
+      margin: 15px 6px 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .observation-id {
+      margin-left: 10px;
+      color: var(--faint);
+      font: 10px ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: .08em;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+    }
+
+    .fallback a { color: var(--accent); }
+
+    @media (max-width: 680px) {
+      .page { padding: 14px; }
+      .topbar { margin: 2px 2px 14px; }
+      .intro { align-items: flex-start; flex-direction: column; }
+      .intro { padding: 82px 22px 24px; }
+      .telemetry { inset: 0 0 auto; width: 100%; height: 58px; border-right: 0; border-bottom: 1px solid var(--line); background: repeating-linear-gradient(to right, transparent 0 11px, var(--line) 11px 12px), var(--accent-soft); }
+      .telemetry::before { top: 50%; left: 18%; width: 2px; height: 64%; animation: scan-mobile 4.8s cubic-bezier(.45, 0, .55, 1) infinite; }
+      .telemetry::after { right: 14px; bottom: 50%; left: auto; text-align: right; transform: translateY(50%); }
+      .panel-bar { grid-template-columns: auto 1fr; }
+      .panel-host { display: none; }
+      iframe { height: 72vh; min-height: 540px; }
+    }
+
+    @keyframes scan-mobile {
+      0%, 100% { left: 12%; opacity: .38; }
+      50% { left: 82%; opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="topbar" aria-label="页面导航">
+      <a class="brand" href="/">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span>Krisnile <span class="observation-id">OBS / 001</span></span>
+      </a>
+      <a class="back" href="/">← 返回博客</a>
+    </nav>
+
+    <header class="intro">
+      <div class="telemetry" aria-hidden="true"></div>
+      <div>
+        <p class="eyebrow">OBSERVATION DESK · SITE STATUS</p>
+        <h1>站点状态与访问数据</h1>
+        <p class="intro-copy">查看博客的运行情况、访问趋势与数据概览。监测面板由 Google 服务提供，首次加载可能需要一点时间。</p>
+      </div>
+      <div class="status" aria-label="监测面板状态">
+        <span class="status-dot"></span>
+        <span>监测面板在线</span>
+      </div>
+    </header>
+
+    <section class="panel" aria-label="站点监测面板">
+      <div class="panel-bar">
+        <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
+        <span class="panel-host">webdata.krisnile.com</span>
+        <a class="panel-link" href="https://webdata.krisnile.com/" target="_blank" rel="noopener noreferrer">新窗口打开 ↗</a>
+      </div>
+      <iframe
+        src="https://lookerstudio.google.com/embed/reporting/15ec8ad3-da9e-46cc-b21e-badaaeac03ac"
+        title="Krisnile 站点监测面板"
+        loading="eager"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allow="fullscreen"
+      ></iframe>
+    </section>
+
+    <p class="fallback">面板没有显示？可能是网络或浏览器安全策略所致，请尝试<a href="https://webdata.krisnile.com/" target="_blank" rel="noopener noreferrer">直接访问监测页面</a>。</p>
+  </main>
+</body>
+</html>
